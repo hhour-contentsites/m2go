@@ -145,3 +145,9 @@ h1, h2, h3, h4, h5, h6, ul {
 
 h1 {
   font-family: Helvetica, sans-serif; }
+
+  .ui-autocomplete {
+    background: white;
+    border: 2px solid black;
+    max-width: 400px;
+}
