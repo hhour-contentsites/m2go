@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Project 3</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="http://js.api.here.com/v3/3.0/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://js.api.here.com/v3/3.0/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
+
+</head>
+
+<body>
+    <main>
+        <header>
+            <h1>Maps 2 Go</h1>
+        </header>
+        <div style="width: 640px; height: 480px" id="mapContainer"></div>
+        <div id="alert-placeholder">Block</div>
+        <form action="">
+            <fieldset class="leavingFrom">
+                <h2>Leaving From:</h2>
+
+                <label for="leaving_from">From:</label>
+                <input id="leaving_from" type="text">
+
+            </fieldset>
+
+            <fieldset class="goingTo">
+                <h2>Going To:</h2>
+
+                <label for="going_to">Going:</label>
+                <input id="going_to" type="text">
+
+            </fieldset>
+
+            <fieldset class="submitButton">
+
+
+                <div class="submit-container">
+                    <input type="submit" value="Get Me Directions">
+                </div>
+
+                <!-- <div class="clear-button">
+                    <button>Clear Selection</button>
+                </div> -->
+
+            </fieldset>
+        </form>
+
+        <section class="results">
+            <!-- we want the result output here -->
+        </section>
+
+
+        <section class="action" id='result'>
+            <!--   <h1>PATIENT IS IN CRITICAL CONDITION</h1> // value 1-8 -->
+        </section>
+
+        <!--         <section class="action">
+            <h2>PATIENT IS IN MEDIUM LEVEL RISK</h2> //value 8-12
+        </section>
+
+        <section class="action">
+            <h3>PATIENT IS IN LOW LEVEL RISK</h3> //value 12-15
+        </section> -->
+
+
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
+    <script src="script.js"></script>
+    <script src="js/jquery-ui-1.9.2.custom.min.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+    //>Map Object
+    // Initialize the platform object:
+    var platform = new H.service.Platform({
+    'app_id': 'GcFeBFxSQy59KaIwNGNT',
+    'app_code': 'hUm4bhECAqoXGLXd7TV1Xw'
+    });
+
+    // Obtain the default map types from the platform object
+    var maptypes = platform.createDefaultLayers();
+
+    // Instantiate (and display) a map object:
+    var map = new H.Map(
+    document.getElementById('mapContainer'),
+    maptypes.normal.map,
+    {
+      zoom: 10,
+      center: { lng: 13.4, lat: 52.51 }
+    });
+    //>End of Map Object
+    var availableTags = [
+      "Ontario",
+      "British Columbia",
+      "Alberta",
+      "Nova Scotia",
+      "Prince Edward",
+      "Nunavut",
+      "Quebec",
+      "Manitoba",
+      "Saskatchewan",
+      "New Brunswick",
+      "Newfoundland and Labrador"
+    ];
+    //Autocomplete Code
+    $( function() {
+
+    $( "#leaving_from" ).autocomplete({
+      source: availableTags
+    });
+  } );
+    //End of Autocomplete
+
+    //AJAX Request to Here.com
+      $.ajax({
+      dataType: 'json',
+      url: "https://geocoder.api.here.com/6.2/geocode.json?app_id=GcFeBFxSQy59KaIwNGNT&app_code=hUm4bhECAqoXGLXd7TV1Xw&searchtext=425+W+Randolph+Chi",
+      type: "GET",
+      success: function (data) {
+          //bindData(data);
+          console.log(data);
+          $("#alert-placeholder").empty();
+          $('#alert-placeholder').removeClass('alert alert-danger');
+      },
+      error: function (xhr, textStatus, errorThrown) {
+          $('#alert-placeholder').addClass('alert alert-danger');
+          $('#alert-placeholder').html(errorThrown);
+      }
+    });
+    //End of Ajax Request to here.com
+  </script>
+</body>
+</html>
