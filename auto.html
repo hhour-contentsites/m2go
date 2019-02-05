@@ -13,13 +13,10 @@
 
   <div id="map" style="position:absolute; width:49%; height:100%; background:grey" ></div>
   <div id="panel" style="position:absolute; width:49%; left:51%; height:100%; background:inherit" ></div>
-
   <script  type="text/javascript" charset="UTF-8" >
-
   var AUTOCOMPLETION_URL = 'https://autocomplete.geocoder.api.here.com/6.2/suggest.json',
     ajaxRequest = new XMLHttpRequest(),
     query = '';
-
 /**
  * If the text in the text box  has changed, and is not empty,
  * send a geocoding auto-completion request to the server.
@@ -28,10 +25,8 @@
  * @param {Object} event the DOM event which fired this listener
  */
 function autoCompleteListener(textBox, event) {
-
   if (query != textBox.value){
     if (textBox.value.length >= 1){
-
       /**
       * A full list of available request parameters can be found in the Geocoder Autocompletion
       * API documentation.
@@ -177,16 +172,15 @@ function addSuggestionsToMap(response){
       i;
 
       // Add a marker for each location found
-      for (i = 0; i < locations.length; i++) {
+    for (i = 0; i < locations.length; i++) {
         marker = new H.map.Marker({
           lat : locations[i].Location.DisplayPosition.Latitude,
           lng : locations[i].Location.DisplayPosition.Longitude
         });
-        marker.setData(locations[i].Location.Address.Label);
-        group.addObject(marker);
-      }
-
-      map.setViewBounds(group.getBounds());
+      marker.setData(locations[i].Location.Address.Label);
+      group.addObject(marker);
+    }
+    map.setViewBounds(group.getBounds());
       if(group.getObjects().length < 2){
         map.setZoom(15);
       }
@@ -234,31 +228,26 @@ function addSuggestionsToMap(response){
  * Removes all H.map.Marker points from the map and adds closes the info bubble
  */
 function clearOldSuggestions(){
-   group.removeAll ();
-    if(bubble){
-      bubble.close();
-    }
+  group.removeAll ();
+  if(bubble){
+    bubble.close();
+  }
 }
-
-/**
- * Format the geocoding autocompletion repsonse object's data for display
- *
- * @param {Object} response
- */
-function addSuggestionsToPanel(response){
+  /**
+  * Format the geocoding autocompletion repsonse object's data for display
+  *
+  * @param {Object} response
+  */
+  function addSuggestionsToPanel(response){
    var suggestions = document.getElementById('suggestions');
    suggestions.innerHTML = JSON.stringify(response, null, ' ');
-}
-
-
+  }
 
  var content =  '<strong style="font-size: large;">' + 'Geocoding Autocomplete'  + '</strong></br>';
-
-  content  += '<br/><input type="text" id="auto-complete" style="margin-left:5%; margin-right:5%; min-width:90%"  onkeyup="return autoCompleteListener(this, event);"><br/>';
-  content  += '<br/><strong>Response:</strong><br/>';
-  content  += '<div style="margin-left:5%; margin-right:5%;"><pre style="max-height:235px"><code  id="suggestions" style="font-size: small;">' +'{}' + '</code></pre></div>';
-
-  suggestionsContainer.innerHTML = content;
-  </script>
+ content  += '<br/><input type="text" id="auto-complete" style="margin-left:5%; margin-right:5%; min-width:90%"  onkeyup="return autoCompleteListener(this, event);"><br/>';
+ content  += '<br/><strong>Response:</strong><br/>';
+ content  += '<div style="margin-left:5%; margin-right:5%;"><pre style="max-height:235px"><code  id="suggestions" style="font-size: small;">' +'{}' + '</code></pre></div>';
+ suggestionsContainer.innerHTML = content;
+ </script>
 </body>
 </html>

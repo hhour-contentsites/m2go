@@ -1,21 +1,15 @@
  <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Project 3</title>
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ"
         crossorigin="anonymous">
     <link rel="stylesheet" href="styles/style.css">
     <script src="http://js.api.here.com/v3/3.0/mapsjs-core.js" type="text/javascript" charset="utf-8"></script>
     <script src="http://js.api.here.com/v3/3.0/mapsjs-service.js" type="text/javascript" charset="utf-8"></script>
-
 </head>
-
-<div></div>
-
 <body>
     <main>
         <header>
@@ -26,52 +20,36 @@
         <form action="">
             <fieldset class="leavingFrom">
                 <h2>Leaving From:</h2>
-
                 <label for="leaving_from">From:</label>
-                <input id="leaving_from" onkeyup="fromLoc()" type="text">
-
+                <input id="leaving_from" onkeydown="fromLoc()" type="text">
             </fieldset>
-
             <fieldset class="goingTo">
                 <h2>Going To:</h2>
-
                 <label for="going_to">Going:</label>
-                <input id="going_to" type="text">
-
+                <input id="going_to"  onkeyup="toLoc()" type="text">
             </fieldset>
-
             <fieldset class="submitButton">
-
-
                 <div class="submit-container">
-                    <input type="submit" value="Get Me Directions">
+                    <input type="submit" id="directionBtn" onclick="getDirection()" value="Get Me Directions">
                 </div>
-
                 <!-- <div class="clear-button">
                     <button>Clear Selection</button>
                 </div> -->
-
             </fieldset>
         </form>
-<div id="dataBlock"></div>
+        <div id="dataBlock"></div>
         <section class="results">
             <!-- we want the result output here -->
         </section>
-
-
         <section class="action" id='result'>
             <!--   <h1>PATIENT IS IN CRITICAL CONDITION</h1> // value 1-8 -->
         </section>
-
-        <!--         <section class="action">
+        <!--<section class="action">
             <h2>PATIENT IS IN MEDIUM LEVEL RISK</h2> //value 8-12
         </section>
-
         <section class="action">
             <h3>PATIENT IS IN LOW LEVEL RISK</h3> //value 12-15
         </section> -->
-
-
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script>
     <script src="script.js"></script>
@@ -97,9 +75,11 @@
     });
     //>End of Map Object
     var availableTags = [];
+    var availableTags2 = [];
 
     //AJAX Request to Here.com
     function fromLoc(){
+      availableTags = [];
       fromTxt = document.getElementById('leaving_from').value;
 
         $.ajax({
@@ -113,6 +93,10 @@
           for (i = 0; i < data.suggestions.length; i++) {
             availableTags.push(data.suggestions[i].label);
           }
+
+          $( "#leaving_from" ).autocomplete({
+            source: availableTags
+          });
           //document.getElementById('dataBlock').innerHTML = 'test';
           //  document.getElementById('dataBlock').innerHTML = jsonObj;
 
@@ -121,17 +105,99 @@
           //No Result found
         }
         });
+      }
+
+      function toLoc(){
+        availableTags2 = [];
+        fromTxt = document.getElementById('going_to').value;
+
+          $.ajax({
+          dataType: 'json',
+          url: "https://autocomplete.geocoder.api.here.com/6.2/suggest.json?app_id=GcFeBFxSQy59KaIwNGNT&app_code=hUm4bhECAqoXGLXd7TV1Xw&query="+fromTxt+"&maxresults=10",
+          type: "GET",
+          success: function (data) {
+            console.log(data);
+            var i;
+            for (i = 0; i < data.suggestions.length; i++) {
+              availableTags2.push(data.suggestions[i].label);
+            }
+            //document.getElementById('dataBlock').innerHTML = 'test';
+            //  document.getElementById('dataBlock').innerHTML = jsonObj;
+            $( "#going_to" ).autocomplete({
+              source: availableTags2
+            });
+          },
+          error: function (xhr, textStatus, errorThrown) {
+            //No Result found
+          }
+          });
+        }
+    //End of Ajax Request to here.com
+      //Click Function work Start
+      function getDirection(){
+        var loc1 = document.getElementById('leaving_from').value;
+        var loc2 = document.getElementById('going_to').value;
+        $.ajax({
+            url: 'https://geocoder.api.here.com/6.2/geocode.json',
+            type: 'GET',
+            dataType: 'jsonp',
+            jsonp: 'jsoncallback',
+            data: {
+              searchtext: loc1,
+              app_id: 'GcFeBFxSQy59KaIwNGNT',
+              app_code: 'hUm4bhECAqoXGLXd7TV1Xw',
+              gen: '9'
+            },
+            success: function (data) {
+              var fromLat = data.Response.View[0].Result[0].Location.DisplayPosition.Latitude;
+              var fromLang = data.Response.View[0].Result[0].Location.DisplayPosition.Longitude;
+            }
+          });
+
+          $.ajax({
+              url: 'https://geocoder.api.here.com/6.2/geocode.json',
+              type: 'GET',
+              dataType: 'jsonp',
+              jsonp: 'jsoncallback',
+              data: {
+                searchtext: loc2,
+                app_id: 'GcFeBFxSQy59KaIwNGNT',
+                app_code: 'hUm4bhECAqoXGLXd7TV1Xw',
+                gen: '9'
+              },
+              success: function (data) {
+                var toLat = data.Response.View[0].Result[0].Location.DisplayPosition.Latitude;
+                var toLang = data.Response.View[0].Result[0].Location.DisplayPosition.Longitude;
+              }
+          });
+
+
+          //Code for Directions
+
+          $.ajax({
+            url: 'https://route.api.here.com/routing/7.2/calculateroute.json',
+            type: 'GET',
+            dataType: 'jsonp',
+            jsonp: 'jsoncallback',
+            data: {
+            waypoint0: '52.5160,13.3779',
+            waypoint1: '52.5206,13.3862',
+            mode: 'fastest;car;traffic:enabled',
+            app_id: 'devportal-demo-20180625',
+            app_code: '9v2BkviRwi9Ot26kp2IysQ',
+            departure: 'now'
+          },
+          success: function (data) {
+            console.log('Direction Data : '+ JSON.stringify(data));
+          }
+          });
+
 
       }
-    //End of Ajax Request to here.com
-
-    //Autocomplete Code
+      //End of Click Function
+      //Autocomplete Code
     $( function() {
-
-    $( "#leaving_from" ).autocomplete({
-      source: availableTags
-    });
-  } );
+    } );
     //End of Autocomplete
 
   </script>
